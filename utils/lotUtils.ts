@@ -43,17 +43,29 @@ export function calculateLotSizeByPrice(
   takeProfitPrice?: number,
   pipValue: number = 0.0001
 ): LotCalculation {
+  // Spread in points (approximately 3 pips like TradingView)
+  const spreadInPips = 3;
+
+  // Determine if it's a long or short position
+  const isLong = stopLossPrice < currentPrice;
+
   // Calculate distance in price
   const stopLossDistance = Math.abs(currentPrice - stopLossPrice);
 
   // Convert price distance to points
-  const stopLossPoints = stopLossDistance / pipValue;
+  let stopLossPoints = stopLossDistance / pipValue;
 
-  // Calculate take profit in points if provided
+  // Calculate take profit in points if provided, accounting for spread
   let takeProfitPoints: number | undefined;
   if (takeProfitPrice) {
     const takeProfitDistance = Math.abs(takeProfitPrice - currentPrice);
     takeProfitPoints = takeProfitDistance / pipValue;
+
+    // For take profit, subtract spread as it reduces actual profit
+    // (you enter at worse price and exit at worse price)
+    if (takeProfitPoints > spreadInPips) {
+      takeProfitPoints = takeProfitPoints - spreadInPips;
+    }
   }
 
   // Use existing calculation with converted points
