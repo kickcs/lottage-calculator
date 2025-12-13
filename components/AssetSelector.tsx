@@ -68,30 +68,30 @@ export default function AssetSelector() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-5 border-2 border-gray-300">
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
-          Select Trading Assets
+    <div className="bg-white rounded-lg shadow p-4 border border-gray-300">
+      <div className="mb-3">
+        <h3 className="text-lg font-bold text-gray-900 mb-1">
+          Select Assets
         </h3>
-        <p className="text-sm font-medium text-gray-800">
-          Choose up to {maxSelections} assets for your calculator
+        <p className="text-xs text-gray-700">
+          Choose up to {maxSelections} assets
         </p>
       </div>
 
       {/* Selected Assets */}
       {selectedAssets.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-sm font-bold text-gray-900 mb-2">Selected Assets:</h4>
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-3">
+          <h4 className="text-xs font-bold text-gray-900 mb-1">Selected:</h4>
+          <div className="flex flex-wrap gap-1">
             {selectedAssets.map((asset) => (
               <span
                 key={asset}
-                className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-200 text-indigo-900 border-2 border-indigo-400"
+                className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-indigo-100 text-indigo-900 border border-indigo-300"
               >
                 {asset}
                 <button
                   onClick={() => handleAssetToggle(asset)}
-                  className="ml-2 text-indigo-800 hover:text-indigo-950 font-bold text-lg"
+                  className="ml-1 text-indigo-800 hover:text-indigo-950 font-bold"
                 >
                   ×
                 </button>
@@ -102,35 +102,35 @@ export default function AssetSelector() {
       )}
 
       {/* Search and Filter */}
-      <div className="mb-4 space-y-2">
+      <div className="mb-3 space-y-2">
         <input
           type="text"
-          placeholder="Search assets..."
+          placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setShowDropdown(true)}
-          className="w-full px-3 py-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 font-medium placeholder-gray-600"
+          className="w-full px-3 py-1.5 text-sm border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
         />
 
         <select
           value={selectedMarket}
           onChange={(e) => setSelectedMarket(e.target.value)}
-          className="w-full px-3 py-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 font-semibold"
+          className="w-full px-3 py-1.5 text-sm border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 font-semibold"
         >
-          <option value="all" className="font-semibold">All Markets</option>
-          <option value="fx" className="font-semibold">Forex</option>
-          <option value="indices" className="font-semibold">Indices</option>
-          <option value="commodities" className="font-semibold">Commodities</option>
+          <option value="all">All Markets</option>
+          <option value="fx">Forex</option>
+          <option value="indices">Indices</option>
+          <option value="commodities">Commodities</option>
         </select>
       </div>
 
       {/* Asset List Dropdown */}
       {showDropdown && (
-        <div className="border-2 border-gray-400 rounded-md max-h-60 overflow-y-auto mb-4 bg-white">
+        <div className="border border-gray-400 rounded max-h-60 overflow-y-auto mb-3 bg-white">
           {loading ? (
-            <div className="p-4 text-center font-bold text-gray-900">Loading assets...</div>
+            <div className="p-3 text-center text-sm font-bold text-gray-900">Loading...</div>
           ) : filteredTickers.length === 0 ? (
-            <div className="p-4 text-center font-bold text-gray-900">No assets found</div>
+            <div className="p-3 text-center text-sm font-bold text-gray-900">No assets found</div>
           ) : (
             filteredTickers.slice(0, 50).map((ticker) => {
               const tickerSymbol = ticker.ticker || 'UNKNOWN';
@@ -140,39 +140,36 @@ export default function AssetSelector() {
               return (
                 <div
                   key={`${ticker.market || 'unknown'}-${tickerSymbol}`}
-                  className={`p-3 hover:bg-gray-200 cursor-pointer border-b-2 border-gray-300 bg-white ${
+                  className={`p-2 hover:bg-gray-100 cursor-pointer border-b border-gray-200 ${
                     isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                   } ${isSelected ? 'bg-indigo-50' : ''}`}
                   onClick={() => !isDisabled && handleAssetToggle(tickerSymbol)}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}}
                         disabled={isDisabled}
-                        className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-500 rounded"
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-400 rounded"
                       />
                       <div>
-                        <div className="font-bold text-gray-950 text-base">
+                        <div className="font-bold text-gray-900 text-sm">
                           {tickerSymbol}
                         </div>
-                        <div className="text-sm font-semibold text-gray-800">
-                          {ticker.name || tickerSymbol || 'Unknown Asset'}
+                        <div className="text-xs text-gray-700">
+                          {ticker.name || tickerSymbol || 'Unknown'}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
                       <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${getMarketBadgeColor(
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold ${getMarketBadgeColor(
                           ticker.market || 'unknown'
                         )}`}
                       >
                         {(ticker.market || 'unknown').toUpperCase()}
-                      </span>
-                      <span className="text-xs font-bold text-gray-900">
-                        {ticker.currency_symbol || 'N/A'}
                       </span>
                     </div>
                   </div>

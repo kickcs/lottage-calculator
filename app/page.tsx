@@ -6,23 +6,20 @@ import LotCalculator from '@/components/LotCalculator';
 export default function Home() {
   return (
     <div className="h-dvh bg-gray-50 flex flex-col overflow-hidden">
-      <div className="container mx-auto px-4 py-6 max-w-2xl flex-1 flex flex-col min-h-0">
+      <div className="container mx-auto px-4 py-3 max-w-2xl flex-1 flex flex-col min-h-0">
         {/* Header */}
-        <div className="mb-4 flex-shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold text-gray-900">
-              Forex Lot Size Calculator
+        <div className="mb-2 flex-shrink-0">
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Lot Size Calculator
             </h1>
             <Link
               href="/settings"
-              className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 transition-colors border-2 border-gray-300"
+              className="px-3 py-1.5 text-sm bg-gray-200 text-gray-800 font-semibold rounded hover:bg-gray-300 transition-colors"
             >
-              ⚙️ Settings
+              Settings
             </Link>
           </div>
-          <p className="text-base font-semibold text-gray-800">
-            Calculate position size and risk/reward ratio
-          </p>
         </div>
 
         {/* Calculator */}
@@ -31,10 +28,8 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <div className="mt-4 flex-shrink-0 text-center text-sm text-gray-700 font-medium">
-          <p>
-            Real-time data powered by Twelve Data API. For educational purposes only.
-          </p>
+        <div className="mt-2 flex-shrink-0 text-center text-xs text-gray-600">
+          <p>Twelve Data API • Educational purposes only</p>
         </div>
       </div>
     </div>

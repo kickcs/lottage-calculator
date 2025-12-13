@@ -154,24 +154,22 @@ export default function LotCalculator() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-300">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Lot Size Calculator</h2>
-
+    <div className="bg-white rounded-lg shadow p-4 border border-gray-300">
       {/* Asset Selection */}
-      <div className="mb-6">
-        <label className="block text-base font-bold text-gray-900 mb-2">
-          Select Asset
+      <div className="mb-3">
+        <label className="block text-sm font-bold text-gray-900 mb-1">
+          Asset
         </label>
         {selectedAssets.length === 0 ? (
-          <div className="w-full px-3 py-2.5 border-2 border-yellow-400 bg-yellow-50 rounded-md font-medium text-gray-900">
-            <p className="text-base font-bold text-gray-900">No assets selected</p>
-            <p className="text-sm text-gray-700 mt-1">Go to Settings to select your trading assets</p>
+          <div className="w-full px-3 py-2 border border-yellow-400 bg-yellow-50 rounded text-sm">
+            <p className="font-bold text-gray-900">No assets selected</p>
+            <p className="text-gray-700 text-xs mt-0.5">Go to Settings to select assets</p>
           </div>
         ) : (
           <select
             value={selectedTicker}
             onChange={(e) => setSelectedTicker(e.target.value)}
-            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium text-gray-900"
+            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-gray-900"
           >
             <option value="">Choose an asset...</option>
             {selectedAssets.map((ticker) => (
@@ -185,7 +183,7 @@ export default function LotCalculator() {
 
       {/* Current Price Display */}
       {currentQuote && (
-        <div className="mb-6">
+        <div className="mb-3">
           <PriceDisplay
             ticker={selectedTicker}
             price={currentQuote.price}
@@ -197,65 +195,65 @@ export default function LotCalculator() {
       )}
 
       {/* Input Fields */}
-      <div className="space-y-4 mb-6">
+      <div className="space-y-2 mb-3">
         <div>
-          <label className="block text-base font-bold text-gray-900 mb-1">
+          <label className="block text-sm font-bold text-gray-900 mb-1">
             Account Size ($)
           </label>
           <input
             type="text"
             value={accountSize}
             onChange={(e) => handleInputChange(setAccountSize, e.target.value)}
-            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium text-gray-900"
+            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-gray-900"
             placeholder="10000"
           />
         </div>
 
         <div>
-          <label className="block text-base font-bold text-gray-900 mb-1">
+          <label className="block text-sm font-bold text-gray-900 mb-1">
             Risk per Trade (%)
           </label>
           <input
             type="text"
             value={riskPercentage}
             onChange={(e) => handleInputChange(setRiskPercentage, e.target.value)}
-            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium text-gray-900"
+            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-gray-900"
             placeholder="2"
           />
         </div>
 
         <div>
-          <label className="block text-base font-bold text-gray-900 mb-1">
+          <label className="block text-sm font-bold text-gray-900 mb-1">
             Stop Loss Price
           </label>
           <input
             type="text"
             value={stopLossPrice}
             onChange={(e) => handleInputChange(setStopLossPrice, e.target.value)}
-            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium text-gray-900"
+            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-gray-900"
             placeholder={currentQuote ? (currentQuote.price * 0.98).toFixed(5) : "Enter price"}
           />
           {currentQuote && stopLossPrice && (
-            <p className="text-xs font-semibold text-gray-700 mt-1">
-              Distance: {Math.abs(currentQuote.price - parseFloat(stopLossPrice)).toFixed(5)} ({((Math.abs(currentQuote.price - parseFloat(stopLossPrice)) / currentQuote.price) * 100).toFixed(2)}%)
+            <p className="text-xs text-gray-600 mt-0.5">
+              {Math.abs(currentQuote.price - parseFloat(stopLossPrice)).toFixed(5)} ({((Math.abs(currentQuote.price - parseFloat(stopLossPrice)) / currentQuote.price) * 100).toFixed(2)}%)
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-base font-bold text-gray-900 mb-1">
-            Take Profit Price - Optional
+          <label className="block text-sm font-bold text-gray-900 mb-1">
+            Take Profit Price
           </label>
           <input
             type="text"
             value={takeProfitPrice}
             onChange={(e) => handleInputChange(setTakeProfitPrice, e.target.value)}
-            className="w-full px-3 py-2.5 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium text-gray-900"
+            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-gray-900"
             placeholder={currentQuote ? (currentQuote.price * 1.04).toFixed(5) : "Enter price"}
           />
           {currentQuote && takeProfitPrice && (
-            <p className="text-xs font-semibold text-gray-700 mt-1">
-              Distance: {Math.abs(parseFloat(takeProfitPrice) - currentQuote.price).toFixed(5)} ({((Math.abs(parseFloat(takeProfitPrice) - currentQuote.price) / currentQuote.price) * 100).toFixed(2)}%)
+            <p className="text-xs text-gray-600 mt-0.5">
+              {Math.abs(parseFloat(takeProfitPrice) - currentQuote.price).toFixed(5)} ({((Math.abs(parseFloat(takeProfitPrice) - currentQuote.price) / currentQuote.price) * 100).toFixed(2)}%)
             </p>
           )}
         </div>
@@ -263,44 +261,42 @@ export default function LotCalculator() {
 
       {/* Error Display */}
       {error && (
-        <div className="mb-4 p-4 bg-red-100 border-2 border-red-300 rounded-md">
-          <div className="text-sm font-semibold text-red-800">{error}</div>
+        <div className="mb-3 p-2 bg-red-50 border border-red-300 rounded">
+          <div className="text-xs font-semibold text-red-800">{error}</div>
         </div>
       )}
 
       {/* Results */}
       {calculation && (
-        <div className="space-y-3 p-5 bg-green-100 rounded-lg border-2 border-green-300">
-          <h3 className="text-xl font-bold text-green-900 mb-3">Calculation Results</h3>
-
-          <div className="grid grid-cols-1 gap-3">
-            <div className="flex justify-between items-center p-4 bg-white rounded-md border-2 border-green-200">
-              <span className="text-base font-bold text-gray-900">Recommended Lot Size:</span>
-              <span className="text-xl font-bold text-green-700">
+        <div className="space-y-2 p-3 bg-green-50 rounded border border-green-300">
+          <div className="grid grid-cols-1 gap-2">
+            <div className="flex justify-between items-center p-2 bg-white rounded border border-green-200">
+              <span className="text-sm font-bold text-gray-900">Lot Size</span>
+              <span className="text-lg font-bold text-green-700">
                 {formatNumber(calculation.lotSize, 2)}
               </span>
             </div>
 
-            <div className="flex justify-between items-center p-4 bg-white rounded-md border-2 border-red-200">
-              <span className="text-base font-bold text-gray-900">Risk Amount:</span>
-              <span className="text-lg font-bold text-red-700">
+            <div className="flex justify-between items-center p-2 bg-white rounded border border-red-200">
+              <span className="text-sm font-bold text-gray-900">Risk</span>
+              <span className="text-sm font-bold text-red-700">
                 {formatCurrency(calculation.riskAmount)}
               </span>
             </div>
 
             {calculation.potentialProfit && (
-              <div className="flex justify-between items-center p-4 bg-white rounded-md border-2 border-green-200">
-                <span className="text-base font-bold text-gray-900">Potential Profit:</span>
-                <span className="text-lg font-bold text-green-700">
+              <div className="flex justify-between items-center p-2 bg-white rounded border border-green-200">
+                <span className="text-sm font-bold text-gray-900">Profit</span>
+                <span className="text-sm font-bold text-green-700">
                   {formatCurrency(calculation.potentialProfit)}
                 </span>
               </div>
             )}
 
             {calculation.riskRewardRatio && (
-              <div className="flex justify-between items-center p-4 bg-white rounded-md border-2 border-blue-200">
-                <span className="text-base font-bold text-gray-900">Risk/Reward Ratio:</span>
-                <span className="text-lg font-bold text-blue-700">
+              <div className="flex justify-between items-center p-2 bg-white rounded border border-blue-200">
+                <span className="text-sm font-bold text-gray-900">RR</span>
+                <span className="text-sm font-bold text-blue-700">
                   1:{formatNumber(calculation.riskRewardRatio, 2)}
                 </span>
               </div>
@@ -311,9 +307,9 @@ export default function LotCalculator() {
 
       {/* Instructions */}
       {!selectedTicker && (
-        <div className="mt-4 p-4 bg-gray-100 rounded-lg border-2 border-gray-300">
-          <p className="text-sm font-semibold text-gray-800">
-            Select an asset from the dropdown above to start calculating your position size.
+        <div className="mt-3 p-2 bg-gray-100 rounded border border-gray-300">
+          <p className="text-xs text-gray-700">
+            Select an asset to calculate position size
           </p>
         </div>
       )}

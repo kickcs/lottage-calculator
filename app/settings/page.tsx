@@ -6,23 +6,20 @@ import AssetSelector from '@/components/AssetSelector';
 export default function SettingsPage() {
   return (
     <div className="h-dvh bg-gray-50 flex flex-col overflow-hidden">
-      <div className="container mx-auto px-4 py-6 max-w-4xl flex-1 flex flex-col min-h-0">
+      <div className="container mx-auto px-4 py-3 max-w-4xl flex-1 flex flex-col min-h-0">
         {/* Header */}
-        <div className="mb-4 flex-shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold text-gray-900">
+        <div className="mb-2 flex-shrink-0">
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-2xl font-bold text-gray-900">
               Settings
             </h1>
             <Link
               href="/"
-              className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 transition-colors border-2 border-gray-300"
+              className="px-3 py-1.5 text-sm bg-gray-200 text-gray-800 font-semibold rounded hover:bg-gray-300 transition-colors"
             >
-              ← Back to Calculator
+              ← Back
             </Link>
           </div>
-          <p className="text-base font-semibold text-gray-800">
-            Configure your trading assets and preferences
-          </p>
         </div>
 
         {/* Asset Selector */}
@@ -31,10 +28,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-4 flex-shrink-0 text-center text-sm text-gray-700 font-medium">
-          <p>
-            Selected assets will be saved automatically and used in the calculator
-          </p>
+        <div className="mt-2 flex-shrink-0 text-center text-xs text-gray-600">
+          <p>Assets auto-saved to calculator</p>
         </div>
       </div>
     </div>
