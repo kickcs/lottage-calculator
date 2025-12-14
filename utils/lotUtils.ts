@@ -1,4 +1,12 @@
 import { LotCalculation, CalculationInput } from '@/types';
+import {
+  DEFAULT_SPREAD_PIPS,
+  MIN_LOT_SIZE,
+  MAX_LOT_SIZE,
+  STANDARD_LOT_SIZE,
+  INDICES,
+  COMMODITIES,
+} from '@/constants';
 
 export function calculateLotSize(input: CalculationInput): LotCalculation {
   const {
@@ -6,7 +14,6 @@ export function calculateLotSize(input: CalculationInput): LotCalculation {
     riskPercentage,
     stopLossPoints,
     takeProfitPoints,
-    currentPrice,
     pipValue,
   } = input;
 
@@ -14,19 +21,19 @@ export function calculateLotSize(input: CalculationInput): LotCalculation {
   const riskAmount = (accountSize * riskPercentage) / 100;
 
   // Calculate lot size based on risk and stop loss
-  // Formula: Lot Size = Risk Amount / (Stop Loss in Points * Pip Value * 100,000)
-  const lotSize = riskAmount / (stopLossPoints * pipValue * 100000);
+  // Formula: Lot Size = Risk Amount / (Stop Loss in Points * Pip Value * Standard Lot Size)
+  const lotSize = riskAmount / (stopLossPoints * pipValue * STANDARD_LOT_SIZE);
 
   let potentialProfit: number | undefined;
   let riskRewardRatio: number | undefined;
 
   if (takeProfitPoints) {
-    potentialProfit = lotSize * takeProfitPoints * pipValue * 100000;
+    potentialProfit = lotSize * takeProfitPoints * pipValue * STANDARD_LOT_SIZE;
     riskRewardRatio = potentialProfit / riskAmount;
   }
 
   return {
-    lotSize: Math.max(0.01, Math.min(lotSize, 100)), // Clamp between 0.01 and 100 lots
+    lotSize: Math.max(MIN_LOT_SIZE, Math.min(lotSize, MAX_LOT_SIZE)),
     riskAmount,
     potentialProfit,
     riskRewardRatio,
@@ -34,7 +41,7 @@ export function calculateLotSize(input: CalculationInput): LotCalculation {
   };
 }
 
-// New function to calculate lot size based on price levels instead of points
+// Calculate lot size based on price levels instead of points
 export function calculateLotSizeByPrice(
   accountSize: number,
   riskPercentage: number,
@@ -43,17 +50,11 @@ export function calculateLotSizeByPrice(
   takeProfitPrice?: number,
   pipValue: number = 0.0001
 ): LotCalculation {
-  // Spread in points (approximately 3 pips like TradingView)
-  const spreadInPips = 3;
-
-  // Determine if it's a long or short position
-  const isLong = stopLossPrice < currentPrice;
-
   // Calculate distance in price
   const stopLossDistance = Math.abs(currentPrice - stopLossPrice);
 
   // Convert price distance to points
-  let stopLossPoints = stopLossDistance / pipValue;
+  const stopLossPoints = stopLossDistance / pipValue;
 
   // Calculate take profit in points if provided, accounting for spread
   let takeProfitPoints: number | undefined;
@@ -61,14 +62,12 @@ export function calculateLotSizeByPrice(
     const takeProfitDistance = Math.abs(takeProfitPrice - currentPrice);
     takeProfitPoints = takeProfitDistance / pipValue;
 
-    // For take profit, subtract spread as it reduces actual profit
-    // (you enter at worse price and exit at worse price)
-    if (takeProfitPoints > spreadInPips) {
-      takeProfitPoints = takeProfitPoints - spreadInPips;
+    // Subtract spread as it reduces actual profit
+    if (takeProfitPoints > DEFAULT_SPREAD_PIPS) {
+      takeProfitPoints = takeProfitPoints - DEFAULT_SPREAD_PIPS;
     }
   }
 
-  // Use existing calculation with converted points
   return calculateLotSize({
     accountSize,
     riskPercentage,
@@ -76,7 +75,7 @@ export function calculateLotSizeByPrice(
     takeProfitPoints,
     currentPrice,
     pipValue,
-    ticker: '', // Not needed for this calculation
+    ticker: '',
   });
 }
 
@@ -103,22 +102,11 @@ export function getPipValue(ticker: string, price: number): number {
 }
 
 export function isIndex(ticker: string): boolean {
-  const indices = [
-    'GER40', 'DAX', 'US30', 'DJIA', 'SPX', 'NASDAQ', 'FTSE',
-    'CAC40', 'IBEX35', 'SMI', 'AEX', 'OMX', 'MIB', 'STOXX50'
-  ];
-  return indices.some(index => ticker.includes(index));
+  return INDICES.some(index => ticker.includes(index));
 }
 
 export function isCommodity(ticker: string): boolean {
-  const commodities = [
-    'XAU', 'XAG', 'XPT', 'XPD', // Precious metals
-    'BRENT', 'WTI', 'CRUDE', 'OIL', // Oil
-    'NATGAS', 'GAS', // Natural gas
-    'COPPER', 'ALUMINIUM', 'ZINC', 'NICKEL', // Industrial metals
-    'CORN', 'WHEAT', 'SOYBEAN', 'SUGAR', 'COFFEE', // Agricultural
-  ];
-  return commodities.some(commodity => ticker.includes(commodity));
+  return COMMODITIES.some(commodity => ticker.includes(commodity));
 }
 
 export function getMarketType(ticker: string): 'forex' | 'indices' | 'commodities' {

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Ticker, Quote, LotCalculation } from '@/types';
+import { DEFAULT_ACCOUNT_SIZE, DEFAULT_RISK_PERCENTAGE } from '@/constants';
 
 interface AppState {
   // Assets
@@ -32,6 +33,7 @@ interface AppState {
   setCurrentQuote: (quote: Quote | null) => void;
   setCalculation: (calculation: LotCalculation | null) => void;
   setError: (error: string) => void;
+  resetCalculatorInputs: () => void;
 }
 
 export const useStore = create<AppState>()(
@@ -42,8 +44,8 @@ export const useStore = create<AppState>()(
       tickers: [],
       loading: false,
       selectedTicker: '',
-      accountSize: '10000',
-      riskPercentage: '2',
+      accountSize: DEFAULT_ACCOUNT_SIZE,
+      riskPercentage: DEFAULT_RISK_PERCENTAGE,
       stopLossPrice: '',
       takeProfitPrice: '',
       currentQuote: null,
@@ -62,6 +64,13 @@ export const useStore = create<AppState>()(
       setCurrentQuote: (quote) => set({ currentQuote: quote }),
       setCalculation: (calculation) => set({ calculation }),
       setError: (error) => set({ error }),
+      resetCalculatorInputs: () => set({
+        stopLossPrice: '',
+        takeProfitPrice: '',
+        currentQuote: null,
+        calculation: null,
+        error: '',
+      }),
     }),
     {
       name: 'forex-calculator-storage',
@@ -69,6 +78,7 @@ export const useStore = create<AppState>()(
         selectedAssets: state.selectedAssets,
         accountSize: state.accountSize,
         riskPercentage: state.riskPercentage,
+        selectedTicker: state.selectedTicker,
       }),
     }
   )

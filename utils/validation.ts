@@ -1,76 +1,82 @@
+import {
+  MAX_ACCOUNT_SIZE,
+  MAX_RISK_PERCENTAGE,
+  WARNING_RISK_PERCENTAGE,
+  MAX_STOP_LOSS_POINTS,
+} from '@/constants';
+
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
 }
 
-export function validateLotCalculation(input: {
+export interface LotCalculationInput {
   accountSize: string;
   riskPercentage: string;
   stopLossPoints: string;
   takeProfitPoints?: string;
-}): ValidationResult {
+}
+
+function validateNumber(
+  value: string,
+  fieldName: string,
+  options: { min?: number; max?: number; required?: boolean } = {}
+): string | null {
+  const { min = 0, max, required = true } = options;
+
+  if (!value || value.trim() === '') {
+    return required ? `${fieldName} is required` : null;
+  }
+
+  const num = parseFloat(value);
+  if (isNaN(num)) {
+    return `${fieldName} must be a valid number`;
+  }
+  if (num <= min) {
+    return `${fieldName} must be greater than ${min}`;
+  }
+  if (max !== undefined && num > max) {
+    return `${fieldName} exceeds maximum allowed value`;
+  }
+
+  return null;
+}
+
+export function validateLotCalculation(input: LotCalculationInput): ValidationResult {
   const errors: string[] = [];
 
   // Validate account size
-  if (!input.accountSize || input.accountSize.trim() === '') {
-    errors.push('Account size is required');
-  } else {
-    const accountSize = parseFloat(input.accountSize);
-    if (isNaN(accountSize)) {
-      errors.push('Account size must be a valid number');
-    } else if (accountSize <= 0) {
-      errors.push('Account size must be greater than 0');
-    } else if (accountSize > 1000000000) {
-      errors.push('Account size seems unreasonably large');
-    }
-  }
+  const accountSizeError = validateNumber(input.accountSize, 'Account size', {
+    max: MAX_ACCOUNT_SIZE,
+  });
+  if (accountSizeError) errors.push(accountSizeError);
 
   // Validate risk percentage
-  if (!input.riskPercentage || input.riskPercentage.trim() === '') {
-    errors.push('Risk percentage is required');
+  const riskError = validateNumber(input.riskPercentage, 'Risk percentage', {
+    max: MAX_RISK_PERCENTAGE,
+  });
+  if (riskError) {
+    errors.push(riskError);
   } else {
     const riskPercentage = parseFloat(input.riskPercentage);
-    if (isNaN(riskPercentage)) {
-      errors.push('Risk percentage must be a valid number');
-    } else if (riskPercentage <= 0) {
-      errors.push('Risk percentage must be greater than 0');
-    } else if (riskPercentage > 100) {
-      errors.push('Risk percentage cannot exceed 100%');
-    } else if (riskPercentage > 10) {
-      errors.push('Warning: Risk percentage over 10% is generally not recommended');
+    if (!isNaN(riskPercentage) && riskPercentage > WARNING_RISK_PERCENTAGE) {
+      errors.push(`Warning: Risk over ${WARNING_RISK_PERCENTAGE}% is not recommended`);
     }
   }
 
-  // Validate stop loss points
-  if (!input.stopLossPoints || input.stopLossPoints.trim() === '') {
-    errors.push('Stop loss is required');
-  } else {
-    const stopLossPoints = parseFloat(input.stopLossPoints);
-    if (isNaN(stopLossPoints)) {
-      errors.push('Stop loss must be a valid number');
-    } else if (stopLossPoints <= 0) {
-      errors.push('Stop loss must be greater than 0');
-    } else if (stopLossPoints > 1000) {
-      errors.push('Stop loss seems unreasonably large');
-    }
-  }
+  // Validate stop loss
+  const stopLossError = validateNumber(input.stopLossPoints, 'Stop loss', {
+    max: MAX_STOP_LOSS_POINTS,
+  });
+  if (stopLossError) errors.push(stopLossError);
 
-  // Validate take profit points (optional)
+  // Validate take profit (optional)
   if (input.takeProfitPoints && input.takeProfitPoints.trim() !== '') {
-    const takeProfitPoints = parseFloat(input.takeProfitPoints);
-    if (isNaN(takeProfitPoints)) {
-      errors.push('Take profit must be a valid number');
-    } else if (takeProfitPoints <= 0) {
-      errors.push('Take profit must be greater than 0');
-    } else if (takeProfitPoints > 1000) {
-      errors.push('Take profit seems unreasonably large');
-    }
-
-    // Validate RR ratio if both SL and TP are provided
-    const stopLossPoints = parseFloat(input.stopLossPoints);
-    if (takeProfitPoints && stopLossPoints && takeProfitPoints <= stopLossPoints) {
-      errors.push('Take profit should be larger than stop loss for positive RR ratio');
-    }
+    const takeProfitError = validateNumber(input.takeProfitPoints, 'Take profit', {
+      required: false,
+      max: MAX_STOP_LOSS_POINTS,
+    });
+    if (takeProfitError) errors.push(takeProfitError);
   }
 
   return {
