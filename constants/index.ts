@@ -7,7 +7,21 @@ export const QUOTE_CACHE_TTL = 30000; // 30 seconds
 export const DEFAULT_SPREAD_PIPS = 3;
 export const MIN_LOT_SIZE = 0.01;
 export const MAX_LOT_SIZE = 100;
-export const STANDARD_LOT_SIZE = 100000;
+
+// Contract sizes (units per 1 standard lot)
+export const CONTRACT_SIZES = {
+  FOREX: 100000,      // 100,000 units of base currency
+  XAU: 100,           // 100 troy ounces of gold
+  XAG: 5000,          // 5,000 troy ounces of silver
+  XPT: 100,           // 100 troy ounces of platinum
+  XPD: 100,           // 100 troy ounces of palladium
+  OIL: 1000,          // 1,000 barrels
+  NATGAS: 10000,      // 10,000 MMBtu
+  INDEX: 1,           // $1 per point (CFD standard)
+} as const;
+
+// Legacy alias
+export const STANDARD_LOT_SIZE = CONTRACT_SIZES.FOREX;
 
 // Default Values
 export const DEFAULT_ACCOUNT_SIZE = '10000';

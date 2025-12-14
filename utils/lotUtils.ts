@@ -3,10 +3,30 @@ import {
   DEFAULT_SPREAD_PIPS,
   MIN_LOT_SIZE,
   MAX_LOT_SIZE,
-  STANDARD_LOT_SIZE,
+  CONTRACT_SIZES,
   INDICES,
   COMMODITIES,
 } from '@/constants';
+
+// Get contract size based on ticker
+export function getContractSize(ticker: string): number {
+  const upperTicker = ticker.toUpperCase();
+
+  if (upperTicker.includes('XAU')) return CONTRACT_SIZES.XAU;
+  if (upperTicker.includes('XAG')) return CONTRACT_SIZES.XAG;
+  if (upperTicker.includes('XPT')) return CONTRACT_SIZES.XPT;
+  if (upperTicker.includes('XPD')) return CONTRACT_SIZES.XPD;
+  if (upperTicker.includes('OIL') || upperTicker.includes('BRENT') ||
+      upperTicker.includes('WTI') || upperTicker.includes('CRUDE')) {
+    return CONTRACT_SIZES.OIL;
+  }
+  if (upperTicker.includes('NATGAS') || upperTicker.includes('GAS')) {
+    return CONTRACT_SIZES.NATGAS;
+  }
+  if (isIndex(ticker)) return CONTRACT_SIZES.INDEX;
+
+  return CONTRACT_SIZES.FOREX;
+}
 
 export function calculateLotSize(input: CalculationInput): LotCalculation {
   const {
@@ -15,20 +35,24 @@ export function calculateLotSize(input: CalculationInput): LotCalculation {
     stopLossPoints,
     takeProfitPoints,
     pipValue,
+    ticker,
   } = input;
+
+  // Get contract size for this asset type
+  const contractSize = getContractSize(ticker);
 
   // Calculate risk amount in account currency
   const riskAmount = (accountSize * riskPercentage) / 100;
 
-  // Calculate lot size based on risk and stop loss
-  // Formula: Lot Size = Risk Amount / (Stop Loss in Points * Pip Value * Standard Lot Size)
-  const lotSize = riskAmount / (stopLossPoints * pipValue * STANDARD_LOT_SIZE);
+  // Formula: Lot Size = Risk Amount / (Stop Loss in Points * Pip Value * Contract Size)
+  // This gives us how many lots we can trade while risking exactly riskAmount
+  const lotSize = riskAmount / (stopLossPoints * pipValue * contractSize);
 
   let potentialProfit: number | undefined;
   let riskRewardRatio: number | undefined;
 
   if (takeProfitPoints) {
-    potentialProfit = lotSize * takeProfitPoints * pipValue * STANDARD_LOT_SIZE;
+    potentialProfit = lotSize * takeProfitPoints * pipValue * contractSize;
     riskRewardRatio = potentialProfit / riskAmount;
   }
 
@@ -47,8 +71,9 @@ export function calculateLotSizeByPrice(
   riskPercentage: number,
   currentPrice: number,
   stopLossPrice: number,
-  takeProfitPrice?: number,
-  pipValue: number = 0.0001
+  takeProfitPrice: number | undefined,
+  pipValue: number,
+  ticker: string
 ): LotCalculation {
   // Calculate distance in price
   const stopLossDistance = Math.abs(currentPrice - stopLossPrice);
@@ -75,7 +100,7 @@ export function calculateLotSizeByPrice(
     takeProfitPoints,
     currentPrice,
     pipValue,
-    ticker: '',
+    ticker,
   });
 }
 

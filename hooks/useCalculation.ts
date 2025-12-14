@@ -63,7 +63,8 @@ export function useCalculation({
         currentQuote.price,
         stopLossPriceNum,
         takeProfitPriceNum,
-        pipValue
+        pipValue,
+        selectedTicker
       );
 
       return { calculation: result, validationError: null };
