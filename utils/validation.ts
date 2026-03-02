@@ -109,7 +109,8 @@ export function validateAssetSelection(selectedAssets: string[], maxAssets: numb
 }
 
 export function sanitizeInput(value: string): string {
-  return value.trim().replace(/[^0-9.-]/g, '');
+  // Convert comma to dot for locales where keyboard shows comma
+  return value.trim().replace(/,/g, '.').replace(/[^0-9.-]/g, '');
 }
 
 export function formatInput(value: string, allowNegative: boolean = false): string {

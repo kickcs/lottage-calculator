@@ -6,7 +6,7 @@ import {
   calculateLotSizeByPrice,
   getPipValue,
 } from '@/utils/lotUtils';
-import { validateLotCalculation } from '@/utils/validation';
+import { validateLotCalculation, formatInput } from '@/utils/validation';
 
 interface UseCalculationParams {
   accountSize: string;
@@ -81,14 +81,7 @@ export function useCalculation({
 export function useInputHandler(setter: (value: string) => void) {
   return useCallback(
     (value: string) => {
-      // Format input: remove non-numeric characters except decimal and minus
-      const formatted = value.trim().replace(/[^0-9.-]/g, '');
-      // Prevent multiple decimal points
-      const parts = formatted.split('.');
-      const result = parts.length > 2
-        ? parts[0] + '.' + parts.slice(1).join('')
-        : formatted;
-      setter(result);
+      setter(formatInput(value));
     },
     [setter]
   );

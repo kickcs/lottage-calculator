@@ -20,6 +20,7 @@ interface AppState {
   currentQuote: Quote | null;
   calculation: LotCalculation | null;
   error: string;
+  customPrice: string | null;
 
   // Actions
   setSelectedAssets: (assets: string[]) => void;
@@ -33,6 +34,7 @@ interface AppState {
   setCurrentQuote: (quote: Quote | null) => void;
   setCalculation: (calculation: LotCalculation | null) => void;
   setError: (error: string) => void;
+  setCustomPrice: (price: string | null) => void;
   resetCalculatorInputs: () => void;
 }
 
@@ -51,6 +53,7 @@ export const useStore = create<AppState>()(
       currentQuote: null,
       calculation: null,
       error: '',
+      customPrice: null,
 
       // Actions
       setSelectedAssets: (assets) => set({ selectedAssets: assets }),
@@ -64,12 +67,14 @@ export const useStore = create<AppState>()(
       setCurrentQuote: (quote) => set({ currentQuote: quote }),
       setCalculation: (calculation) => set({ calculation }),
       setError: (error) => set({ error }),
+      setCustomPrice: (price) => set({ customPrice: price }),
       resetCalculatorInputs: () => set({
         stopLossPrice: '',
         takeProfitPrice: '',
         currentQuote: null,
         calculation: null,
         error: '',
+        customPrice: null,
       }),
     }),
     {

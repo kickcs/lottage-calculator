@@ -12,6 +12,7 @@ import {
 
 interface UseQuoteOptions {
   ticker: string;
+  enabled?: boolean;
   onQuoteUpdate: (quote: Quote | null) => void;
   onError: (error: string) => void;
   onLoadingChange: (loading: boolean) => void;
@@ -19,6 +20,7 @@ interface UseQuoteOptions {
 
 export function useQuote({
   ticker,
+  enabled = true,
   onQuoteUpdate,
   onError,
   onLoadingChange,
@@ -90,6 +92,8 @@ export function useQuote({
       return;
     }
 
+    if (!enabled) return;
+
     fetchQuote(ticker);
 
     const interval = setInterval(() => {
@@ -102,7 +106,7 @@ export function useQuote({
         abortControllerRef.current.abort();
       }
     };
-  }, [ticker, fetchQuote, onQuoteUpdate]);
+  }, [ticker, enabled, fetchQuote, onQuoteUpdate]);
 
   return { refetch: () => fetchQuote(ticker) };
 }

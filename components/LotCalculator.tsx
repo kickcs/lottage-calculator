@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from '@/store/useStore';
 import { useQuote, useCalculation, useInputHandler } from '@/hooks';
 import {
@@ -22,6 +22,7 @@ export default function LotCalculator() {
     currentQuote,
     error,
     loading,
+    customPrice,
     setSelectedTicker,
     setAccountSize,
     setRiskPercentage,
@@ -30,6 +31,7 @@ export default function LotCalculator() {
     setCurrentQuote,
     setError,
     setLoading,
+    setCustomPrice,
   } = useStore();
 
   // Custom hook for fetching quotes
@@ -46,21 +48,31 @@ export default function LotCalculator() {
     [setLoading]
   );
 
-  useQuote({
+  const { refetch } = useQuote({
     ticker: selectedTicker,
+    enabled: customPrice === null,
     onQuoteUpdate: handleQuoteUpdate,
     onError: handleQuoteError,
     onLoadingChange: handleLoadingChange,
   });
 
-  // Custom hook for calculations
+  // Build an effective quote that uses customPrice when set
+  const effectiveQuote = useMemo(() => {
+    if (!currentQuote) return null;
+    if (customPrice === null) return currentQuote;
+    const parsed = parseFloat(customPrice);
+    if (isNaN(parsed) || parsed <= 0) return currentQuote;
+    return { ...currentQuote, price: parsed };
+  }, [currentQuote, customPrice]);
+
+  // Custom hook for calculations — uses effectiveQuote
   const { calculation, validationError } = useCalculation({
     accountSize,
     riskPercentage,
     stopLossPrice,
     takeProfitPrice,
     selectedTicker,
-    currentQuote,
+    currentQuote: effectiveQuote,
   });
 
   // Update error state from validation
@@ -83,6 +95,11 @@ export default function LotCalculator() {
     [setSelectedTicker]
   );
 
+  const handleRefresh = useCallback(() => {
+    setCustomPrice(null);
+    refetch();
+  }, [setCustomPrice, refetch]);
+
   return (
     <div className="bg-white rounded-lg shadow p-4 border border-gray-300">
       <AssetSelect
@@ -95,11 +112,13 @@ export default function LotCalculator() {
       {currentQuote && (
         <div className="mb-3">
           <PriceDisplay
-            ticker={selectedTicker}
             price={currentQuote.price}
             bid={currentQuote.bid}
             ask={currentQuote.ask}
             loading={loading}
+            customPrice={customPrice}
+            onCustomPriceChange={setCustomPrice}
+            onRefresh={handleRefresh}
           />
         </div>
       )}
@@ -109,7 +128,7 @@ export default function LotCalculator() {
         riskPercentage={riskPercentage}
         stopLossPrice={stopLossPrice}
         takeProfitPrice={takeProfitPrice}
-        currentPrice={currentQuote?.price}
+        currentPrice={effectiveQuote?.price}
         onAccountSizeChange={handleAccountSizeChange}
         onRiskPercentageChange={handleRiskPercentageChange}
         onStopLossPriceChange={handleStopLossPriceChange}
